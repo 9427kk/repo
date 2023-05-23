@@ -1,0 +1,14 @@
+inputSet:
+  name: Build_repo_1684855388465-pr-trigger-input-set
+  identifier: Build_repo_1684855388465prtriggerinputset
+  orgIdentifier: default
+  projectIdentifier: default_project
+  pipeline:
+    identifier: Build_repo_1684855388465
+    properties:
+      ci:
+        codebase:
+          build:
+            type: PR
+            spec:
+              number: <+trigger.prNumber>
