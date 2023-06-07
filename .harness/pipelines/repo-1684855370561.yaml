@@ -3,32 +3,46 @@ pipeline:
   name: Build repo
   orgIdentifier: default
   projectIdentifier: default_project
-  properties:
-    ci:
-      codebase:
-        build: <+input>
-        connectorRef: account.Github_OAuth_1684855359251
-        repoName: 9427kk/repo
   stages:
     - stage:
-        identifier: build
-        name: build
+        name: uu
+        identifier: uu
+        description: ""
+        type: Deployment
         spec:
-          cloneCodebase: true
+          deploymentType: Kubernetes
+          gitOpsEnabled: true
+          service:
+            serviceRef: ser
           execution:
             steps:
               - step:
-                  identifier: echo
-                  name: echo
+                  type: GitOpsUpdateReleaseRepo
+                  name: Update Release Repo
+                  identifier: updateReleaseRepo
+                  timeout: 10m
+                  spec: {}
+              - step:
+                  type: MergePR
+                  name: Merge PR
+                  identifier: mergePR
                   spec:
-                    command: echo hello world123
-                    shell: Sh
-                  timeout: ""
-                  type: Run
-          platform:
-            arch: Amd64
-            os: Linux
-          runtime:
-            spec: {}
-            type: Cloud
-        type: CI
+                    deleteSourceBranch: true
+                  timeout: 10m
+              - step:
+                  type: GitOpsFetchLinkedApps
+                  name: Fetch Linked Apps
+                  identifier: fetchLinkedApps
+                  timeout: 10m
+                  spec: {}
+            rollbackSteps: []
+          environment:
+            environmentRef: dev_1684855670258
+            deployToAll: true
+        tags: {}
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: StageRollback
